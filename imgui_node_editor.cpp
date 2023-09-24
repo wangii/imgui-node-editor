@@ -38,6 +38,9 @@
 
 namespace ax {
 namespace NodeEditor {
+    
+BehaviorCustomization_t BehaviorCustomization;    
+
 namespace Detail {
 
 # if !defined(IMGUI_VERSION_NUM) || (IMGUI_VERSION_NUM < 18822)

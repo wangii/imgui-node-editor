@@ -42,12 +42,13 @@ struct LinkId;
 struct PinId;
 
 #ifdef IMGUI_NODE_EDITOR_HAS_BEHAVIOR_CUSTOMIZATION
-extern struct 
+struct BehaviorCustomization_t
 {
     bool (*NodeAcceptDrag)(NodeId, bool) = nullptr;
     ImVec2 (*NodeUpdateDrag)(NodeId, bool, const ImVec2&) = nullptr;
     void (*NodeEndDrag)(NodeId, bool) = nullptr;
-}BehaviorCustomization;
+};
+extern  BehaviorCustomization_t BehaviorCustomization;
 #endif
 
 //------------------------------------------------------------------------------
