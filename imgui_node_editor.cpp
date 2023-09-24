@@ -626,12 +626,29 @@ ImLine ed::Pin::GetClosestLine(const Pin* pin) const
 //------------------------------------------------------------------------------
 bool ed::Node::AcceptDrag()
 {
+#ifdef IMGUI_NODE_EDITOR_HAS_BEHAVIOR_CUSTOMIZATION    
+    if(BehaviorCustomization.NodeAcceptDrag &&
+        !BehaviorCustomization.NodeAcceptDrag(m_ID, m_Type == NodeType::Node))
+    {
+        return false;
+    }
+#endif
     m_DragStart = m_Bounds.Min;
     return true;
 }
 
-void ed::Node::UpdateDrag(const ImVec2& offset)
+void ed::Node::UpdateDrag(const ImVec2& orig_offset)
 {
+    
+#ifdef IMGUI_NODE_EDITOR_HAS_BEHAVIOR_CUSTOMIZATION    
+    auto offset = orig_offset;
+    if(BehaviorCustomization.NodeUpdateDrag)
+    {
+        offset = BehaviorCustomization.NodeUpdateDrag(m_ID, m_Type == NodeType::Node, orig_offset);
+    }
+#else
+    const auto &offset = orig_offset;
+#endif
     auto size = m_Bounds.GetSize();
     m_Bounds.Min = ImFloor(m_DragStart + offset);
     m_Bounds.Max = m_Bounds.Min + size;
@@ -639,7 +656,16 @@ void ed::Node::UpdateDrag(const ImVec2& offset)
 
 bool ed::Node::EndDrag()
 {
-    return m_Bounds.Min != m_DragStart;
+    auto ret = m_Bounds.Min != m_DragStart;
+    
+#ifdef IMGUI_NODE_EDITOR_HAS_BEHAVIOR_CUSTOMIZATION    
+    if(ret && BehaviorCustomization.NodeEndDrag)
+    {
+        BehaviorCustomization.NodeEndDrag(m_ID, m_Type == NodeType::Node);
+    }
+#endif
+
+    return ret;
 }
 
 void ed::Node::Draw(ImDrawList* drawList, DrawFlags flags)
